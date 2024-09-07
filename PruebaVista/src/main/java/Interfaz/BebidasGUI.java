@@ -32,7 +32,7 @@ public class BebidasGUI extends JFrame {
     public BebidasGUI() {
         super("Interfaz de Bebidas");
         setSize(800, 400); // Tamaño del frame
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Panel de información y botones (este)
