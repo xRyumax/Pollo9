@@ -229,7 +229,7 @@ public class RestauranteInicio extends JFrame {
         panelContenido.add(irMenuButton, c);
 
         // Acción del botón de ir al Menú usando ActionListener
-        irMenuButton.addActionListener(new ActionListener() {
+    irMenuButton.addActionListener(new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (edadUsuario == -1) {
@@ -237,12 +237,13 @@ public class RestauranteInicio extends JFrame {
         } else if (presupuestoUsuario.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Por favor seleccione su presupuesto antes de continuar.");
         } else {
-            // Ejecutar la clase MainFrame del paquete com.polloabrasa.frontend
-            new com.polloabrasa.frontend.MainFrame().setVisible(true);
+            // Ejecutar la clase Interfaz1 del paquete Interfaz
+            new Interfaz.Interfaz1().setVisible(true);
             dispose(); // Cerrar la ventana actual
         }
-    }
-});
+       }
+        }); 
+
 
         // Botón para ir a Sugerencias (mismo tamaño que el de ir al Menú)
         JButton irSugerenciaButton = new JButton("Ir a Sugerencia");

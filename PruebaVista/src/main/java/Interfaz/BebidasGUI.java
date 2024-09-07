@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
-import pgm.logicasp_pgm.PerceptronBebidas;
 
 public class BebidasGUI extends JFrame {
 
@@ -28,18 +27,15 @@ public class BebidasGUI extends JFrame {
     private JSpinner cantidadSpinner;
     private JButton sugerirButton, añadirButton, nextButton;
     private ImageIcon imageIcon;
-    private PerceptronBebidas perceptronBebidas; // Agrega esta línea
+    private String estadoSeleccionado = "-Seleccionar-"; // Variable para almacenar el estado seleccionado
 
     public BebidasGUI() {
         super("Interfaz de Bebidas");
         setSize(800, 400); // Tamaño del frame
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Inicializar PerceptronBebidas
-        perceptronBebidas = new PerceptronBebidas(); // Agrega esta línea
-
-        // Panel de información y botones
+        // Panel de información y botones (este)
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BorderLayout()); // Usar BorderLayout para distribuir componentes
         infoPanel.setBackground(new Color(173, 216, 230)); // Color de fondo celeste claro
@@ -68,13 +64,15 @@ public class BebidasGUI extends JFrame {
         temperaturaLabel.setForeground(new Color(0, 0, 128)); // Color de texto azul oscuro
 
         // Combo Box para el tipo de bebida
-        String[] tipos = {"-Seleccionar-", "Gaseosa", "Alcohol"};
+        String[] tipos = {"-Seleccionar-", "Gaseosa", "Alcohol", "Refrescos","Infusiones"};
         tipoComboBox = new JComboBox<>(tipos);
         tipoComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
 
         // Combo Box para la bebida
         String[] gaseosa = {"-Seleccionar-", "Coca Cola", "Inka Kola", "Fanta"};
         String[] alcohol = {"-Seleccionar-", "Cusqueña", "Arequipeña", "Pilsen"};
+        String[] refrescos = {"-Seleccionar-", "Chicha morada", "Limonada", "Maracuya"};
+        String[] infusiones = {"-Seleccionar-", "Manzanilla", "Te", "Anis"};
         bebidaComboBox = new JComboBox<>(gaseosa);
         bebidaComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
 
@@ -99,7 +97,7 @@ public class BebidasGUI extends JFrame {
         controlsPanel.add(estadoComboBox);
         controlsPanel.add(temperaturaLabel); // Añadir etiqueta de temperatura
 
-        // Panel de botones
+        // Panel de botones (sur)
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 3, 10, 10));
         buttonPanel.setBackground(new Color(135, 206, 235)); // Color de fondo celeste medio
@@ -147,53 +145,42 @@ public class BebidasGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String seleccionado = (String) tipoComboBox.getSelectedItem();
+                bebidaComboBox.removeAllItems(); // Limpiar ítems previos
+
                 if (seleccionado.equals("Gaseosa")) {
-                    bebidaComboBox.removeAllItems();
                     for (String gaseosa : new String[]{"-Seleccionar-", "Coca Cola", "Inka Kola", "Fanta"}) {
                         bebidaComboBox.addItem(gaseosa);
                     }
                 } else if (seleccionado.equals("Alcohol")) {
-                    bebidaComboBox.removeAllItems();
                     for (String alcohol : new String[]{"-Seleccionar-", "Cusqueña", "Arequipeña", "Pilsen"}) {
                         bebidaComboBox.addItem(alcohol);
                     }
+                } else if (seleccionado.equals("Refrescos")) {
+                    for (String refresco : new String[]{"-Seleccionar-", "Chicha morada", "Limonada", "Maracuya"}) {
+                        bebidaComboBox.addItem(refresco);
+                    }
+                } else if (seleccionado.equals("Infusiones")) {
+                    for (String infusiones : new String[]{"-Seleccionar-", "Manzanilla", "Te", "Anis"}) {
+                        bebidaComboBox.addItem(infusiones);
+                    }
                 }
-                updateImage("src/images/default_image.jpg"); // Imagen por defecto
+
+                updateImage("src/images/default_image.jpg"); // Imagen por defecto cuando se cambia el tipo
+            }
+        });
+
+        estadoComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                estadoSeleccionado = (String) estadoComboBox.getSelectedItem();
+                updateImageBasedOnSelection(); // Actualiza la imagen basada en la selección actual
             }
         });
 
         bebidaComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String seleccion = (String) bebidaComboBox.getSelectedItem();
-                String imagePath = "src/images/default_image.jpg"; // Imagen por defecto
-
-                if (tipoComboBox.getSelectedItem().equals("Gaseosa")) {
-                    switch (seleccion) {
-                        case "Coca Cola":
-                            imagePath = "src/images/coca_cola.jpg";
-                            break;
-                        case "Inka Kola":
-                            imagePath = "src/images/inka.jpeg";
-                            break;
-                        case "Fanta":
-                            imagePath = "src/images/fanta.jpg";
-                            break;
-                    }
-                } else if (tipoComboBox.getSelectedItem().equals("Alcohol")) {
-                    switch (seleccion) {
-                        case "Cusqueña":
-                            imagePath = "src/images/cusquena.jpg";
-                            break;
-                        case "Arequipeña":
-                            imagePath = "src/images/arequipena.jpg";
-                            break;
-                        case "Pilsen":
-                            imagePath = "src/images/pilsen.jpeg";
-                            break;
-                    }
-                }
-                updateImage(imagePath);
+                updateImageBasedOnSelection(); // Actualiza la imagen basada en la selección actual
             }
         });
 
@@ -209,39 +196,80 @@ public class BebidasGUI extends JFrame {
             }
         });
 
-        // Listener para el botón "Sugerir"
-        sugerirButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Obtener la temperatura actual
-                    ServicioClima servicioClima = new ServicioClima();
-                    double temperatura = servicioClima.obtenerTemperatura();
-
-                    // Usar el perceptrón para sugerir una bebida
-                    String bebidaSugerida = perceptronBebidas.sugerirBebida(temperatura);
-
-                    // Actualizar el JComboBox con la bebida sugerida
-                    bebidaComboBox.setSelectedItem(bebidaSugerida);
-                    
-                    // Mostrar la bebida sugerida en la interfaz gráfica
-                    updateImage("src/images/" + bebidaSugerida.toLowerCase().replace(" ", "_") + ".jpg");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    // Manejar errores de manera apropiada
-                }
-            }
-        });
-
         // Mostrar la ventana
         setVisible(true);
     }
 
+    private void updateImageBasedOnSelection() {
+        String tipoSeleccionado = (String) tipoComboBox.getSelectedItem();
+        String bebidaSeleccionada = (String) bebidaComboBox.getSelectedItem();
+        String imagePath = "src/images/default_image.jpg"; // Imagen por defecto
+
+        if (tipoSeleccionado != null && bebidaSeleccionada != null) {
+            if (tipoSeleccionado.equals("Gaseosa")) {
+                switch (bebidaSeleccionada) {
+                    case "Coca Cola":
+                        imagePath = estadoSeleccionado.equals("Helada") ? "PruebaVista\\src/images/coca_helada.jpg" : "PruebaVista\\src/images/coca_cola.png";
+                        break;
+                    case "Inka Kola":
+                        imagePath = estadoSeleccionado.equals("Helada") ? "PruebaVista\\src/images/inka_helada.jfif" : "PruebaVista\\src/images/inka.jpg";
+                        break;
+                    case "Fanta":
+                        imagePath = estadoSeleccionado.equals("Helada") ? "PruebaVista\\src/images/fanta_helada.jpg" : "PruebaVista\\src/images/fanta.jpg";
+                        break;
+                }
+            } else if (tipoSeleccionado.equals("Alcohol")) {
+                switch (bebidaSeleccionada) {
+                    case "Cusqueña":
+                        imagePath = "PruebaVista\\src/images/cusquena.png";
+                        break;
+                    case "Arequipeña":
+                        imagePath = "PruebaVista\\src/images/arequipena.jfif";
+                        break;
+                    case "Pilsen":
+                        imagePath = "PruebaVista\\src/images/pilsen.jpg";
+                        break;
+                }
+            } else if (tipoSeleccionado.equals("Refrescos")) {
+                switch (bebidaSeleccionada) {
+                    case "Chicha morada":
+                        imagePath = "PruebaVista\\src/images/chichamorada.jpeg";
+                        break;
+                    case "Limonada":
+                        imagePath = "PruebaVista\\src/images/limonada.jpeg";
+                        break;
+                    case "Maracuya":
+                        imagePath = "PruebaVista\\src/images/maracuya.jpeg";
+                        break;
+                }
+            } else if (tipoSeleccionado.equals("Infusiones")) {
+                switch (bebidaSeleccionada) {
+                    case "Manzanilla":
+                        imagePath = "PruebaVista\\src/images/manzanilla.jpg";
+                        break;
+                    case "Te":
+                        imagePath = "PruebaVista\\src/images/te.jfif";
+                        break;
+                    case "Anis":
+                        imagePath = "PruebaVista\\src/images/anis.jpg";
+                        break;
+                }
+            }
+            updateImage(imagePath);
+        }
+    }
+
     private void updateImage(String imagePath) {
-        ImageIcon icon = new ImageIcon(imagePath);
-        Image image = icon.getImage(); // Obtén la imagen
-        Image scaledImage = image.getScaledInstance(300, 200, Image.SCALE_SMOOTH); // Redimensiona la imagen
+        ImageIcon icon = new ImageIcon(imagePath); // Carga la imagen desde la ruta especificada
+        Image image = icon.getImage(); // Obtiene la imagen en su tamaño original
+
+        // Escala la imagen para que tenga un tamaño de 300x200 píxeles, utilizando suavizado
+        Image scaledImage = image.getScaledInstance(285, 360, Image.SCALE_SMOOTH); 
+
+        // Crea un nuevo ImageIcon con la imagen escalada
         imageIcon = new ImageIcon(scaledImage);
+
+        // Establece el ImageIcon en el JLabel para mostrar la imagen
         imageLabel.setIcon(imageIcon);
     }
 
@@ -249,4 +277,3 @@ public class BebidasGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new BebidasGUI());
     }
 }
-
