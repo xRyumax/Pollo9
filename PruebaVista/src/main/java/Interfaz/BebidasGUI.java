@@ -1,6 +1,7 @@
 package Interfaz;
 
-import Api.ServicioClima;
+
+import Api2.ServicioClima;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

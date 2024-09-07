@@ -1,10 +1,11 @@
 package pgm.logicasp_pgm;
 
-
+import Perceptron.Perceptron;
 import java.util.*;
 import java.util.concurrent.*;
 
 public class Plato {
+
     static final Map<String, List<String>> REQUISITOS = new HashMap<>();
     static final Map<String, String> RECETAS = new HashMap<>();
     static final Map<String, Integer> PRECIOS_BASE = new HashMap<>();
@@ -106,7 +107,7 @@ public class Plato {
     public void setScanner(Scanner scanner) {
         this.scanner = scanner;
     }
-    
+
     public void prepararPlato() {
         elegirPreparacion();
         elegirSabor();

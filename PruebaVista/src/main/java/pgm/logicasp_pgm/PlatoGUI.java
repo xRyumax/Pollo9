@@ -1,6 +1,7 @@
 package pgm.logicasp_pgm;
 
 import Interfaz.BebidasGUI;
+import Perceptron.Perceptron;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;

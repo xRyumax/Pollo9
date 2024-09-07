@@ -237,9 +237,7 @@ public class RestauranteInicio extends JFrame {
         } else if (presupuestoUsuario.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Por favor seleccione su presupuesto antes de continuar.");
         } else {
-            // Ejecutar la clase Interfaz1 del paquete Interfaz
-            new Interfaz.Interfaz1().setVisible(true);
-            dispose(); // Cerrar la ventana actual
+            
         }
        }
         }); 

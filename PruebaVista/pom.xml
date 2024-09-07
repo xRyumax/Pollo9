@@ -46,19 +46,19 @@
     </build>
 
     <dependencies>
-        <!-- Dependencia de JSON -->
+        <!-- Dependencia para JSON -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20230227</version>
         </dependency>
 
-        <!-- Dependencia de FlatLaf -->
+        <!-- Dependencia para FlatLaf -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
-            <version>3.2</version> <!-- Asegúrate de usar la última versión compatible -->
-        </dependency> 
+            <version>3.2</version>
+        </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
