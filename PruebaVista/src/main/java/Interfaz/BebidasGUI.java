@@ -169,7 +169,14 @@ public class BebidasGUI extends JFrame {
                 updateImage("src/images/default_image.jpg"); // Imagen por defecto cuando se cambia el tipo
             }
         });
-
+        sugerirButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+        
+        
         estadoComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
