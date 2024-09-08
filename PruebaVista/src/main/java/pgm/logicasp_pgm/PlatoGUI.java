@@ -25,6 +25,9 @@ public class PlatoGUI extends JFrame {
     private JButton btnPreparar, btnAñadir, btnSiguiente;
     private Perceptron perceptron;
 
+    private int tiempoTotal = 0;
+    private double precioTotal = 0.0;
+
     public PlatoGUI() {
         perceptron = new Perceptron();
         itemsAñadidos = new ArrayList<>();
@@ -81,6 +84,7 @@ public class PlatoGUI extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 2;
         tfNumeroPollos = new JTextField(10);
+        tfNumeroPollos.setEditable(true); // Inicialmente editable
         panelPrincipal.add(tfNumeroPollos, gbc);
 
         // Campo de Contextura
@@ -146,7 +150,7 @@ public class PlatoGUI extends JFrame {
         panelPrincipal.add(new JLabel("Tiempo estimado:"), gbc);
         gbc.gridx = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        lblTiempoEstimado = new JLabel("Placeholder");
+        lblTiempoEstimado = new JLabel("0 minutos");
         panelPrincipal.add(lblTiempoEstimado, gbc);
 
         gbc.gridx = 1;
@@ -155,7 +159,7 @@ public class PlatoGUI extends JFrame {
         panelPrincipal.add(new JLabel("Precio:"), gbc);
         gbc.gridx = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        lblPrecio = new JLabel("Placeholder");
+        lblPrecio = new JLabel("$0.00");
         panelPrincipal.add(lblPrecio, gbc);
 
         // Panel para los botones de acción
@@ -178,6 +182,7 @@ public class PlatoGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 prepararPlato();
+                tfNumeroPollos.setEditable(false); // Deshabilitar la edición
             }
         });
 
@@ -185,6 +190,7 @@ public class PlatoGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 añadirPlato();
+                tfNumeroPollos.setEditable(true); // Habilitar la edición
             }
         });
 
@@ -197,11 +203,93 @@ public class PlatoGUI extends JFrame {
     }
 
     private void prepararPlato() {
-        // Implementación de la lógica para preparar plato
+        // Obtener los datos seleccionados por el usuario
+        String porcion = (String) cbPorcion.getSelectedItem();
+        String contextura = (String) cbContextura.getSelectedItem();
+        String sabor = (String) cbSabor.getSelectedItem();
+        String cantidadStr = tfNumeroPollos.getText();
+
+        // Validar que la cantidad sea un número entero positivo
+        int cantidad = 0;
+        try {
+            cantidad = Integer.parseInt(cantidadStr);
+            if (cantidad <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero positivo.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Ejemplo simple de cálculo de tiempo estimado y precio
+        int tiempoEstimado = calcularTiempoEstimado(porcion, contextura, sabor, cantidad);
+        double precio = calcularPrecio(porcion, contextura, sabor, cantidad);
+
+        // Actualizar las etiquetas con los nuevos valores
+        lblTiempoEstimado.setText(tiempoTotal + tiempoEstimado + " minutos");
+        lblPrecio.setText("$" + String.format("%.2f", precioTotal + precio));
     }
 
     private void añadirPlato() {
-        // Implementación de la lógica para añadir plato
+        // Obtener los datos seleccionados por el usuario
+        String porcion = (String) cbPorcion.getSelectedItem();
+        String contextura = (String) cbContextura.getSelectedItem();
+        String sabor = (String) cbSabor.getSelectedItem();
+        String cantidadStr = tfNumeroPollos.getText();
+
+        // Validar que la cantidad sea un número entero positivo
+        int cantidad = 0;
+        try {
+            cantidad = Integer.parseInt(cantidadStr);
+            if (cantidad <= 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero positivo.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Calcular tiempo estimado y precio para los nuevos datos
+        int tiempoEstimado = calcularTiempoEstimado(porcion, contextura, sabor, cantidad);
+        double precio = calcularPrecio(porcion, contextura, sabor, cantidad);
+
+        // Sumar al total existente
+        tiempoTotal += tiempoEstimado;
+        precioTotal += precio;
+
+        // Actualizar las etiquetas con los nuevos valores
+        lblTiempoEstimado.setText(tiempoTotal + " minutos");
+        lblPrecio.setText("$" + String.format("%.2f", precioTotal));
+
+        // Limpiar los campos del formulario para la siguiente entrada
+        cbPorcion.setSelectedIndex(0);
+        tfNumeroPollos.setText("");
+        cbContextura.setSelectedIndex(0);
+        cbSabor.setSelectedIndex(0);
+    }
+
+    private int calcularTiempoEstimado(String porcion, String contextura, String sabor, int cantidad) {
+        // Lógica para calcular el tiempo estimado
+        int tiempoBase = 30; // Tiempo base en minutos
+        if (contextura.equals("Crocante")) {
+            tiempoBase += 10;
+        } else if (contextura.equals("Tierno")) {
+            tiempoBase += 5;
+        }
+        return tiempoBase + (cantidad * 5); // Tiempo adicional por cada pollo
+    }
+
+    private double calcularPrecio(String porcion, String contextura, String sabor, int cantidad) {
+        // Lógica para calcular el precio
+        double precioBase = 10.0; // Precio base en dólares
+        if (contextura.equals("Crocante")) {
+            precioBase += 2.0;
+        } else if (contextura.equals("Tierno")) {
+            precioBase += 1.0;
+        }
+        return precioBase * cantidad; // Precio total por la cantidad de pollos
     }
 
     private void siguientePaso() {
