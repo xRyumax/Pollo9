@@ -1,5 +1,6 @@
 package Interfaz;
 
+import Bebidas.ArtefactoJ;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,11 +10,13 @@ import java.awt.event.MouseEvent;
 
 public class Interfaz2 extends JFrame {
 
+    
     private JLabel imagenComida;
     private JComboBox<String> porcion1, porcion2, contextura, sabor;
     private JTextField tiempoEstimado, precio;
     private JButton verIngredientes, modificarIngredientes, bebidas, preparar, añadir, emitirBoleta;
 
+    
     public Interfaz2() {
         super("Interfaz de Comida");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -176,7 +179,7 @@ public class Interfaz2 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Abre la interfaz BebidasGUI
-                new BebidasGUI();
+                new ArtefactoJ();
             }
         });
 
