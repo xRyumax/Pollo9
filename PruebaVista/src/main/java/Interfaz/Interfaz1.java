@@ -93,12 +93,6 @@ public class Interfaz1 extends JFrame {
             panelCheckBoxes.add(checkBoxes[i]);
         }
 
-        // Botón "Imprimir Boleta"
-        buttonImprimirBoleta = new JButton("Imprimir Boleta");
-        buttonImprimirBoleta.setBounds(650, 500, 130, 40);
-        estilizarBoton(buttonImprimirBoleta);
-        add(buttonImprimirBoleta);
-
         // Acción del botón "Modificar"
         buttonModificar.addActionListener(new ActionListener() {
             @Override
@@ -111,15 +105,6 @@ public class Interfaz1 extends JFrame {
                 panelImagenes.removeAll();
                 panelImagenes.revalidate();
                 panelImagenes.repaint();
-            }
-        });
-
-        // Acción del botón "Imprimir Boleta"
-        buttonImprimirBoleta.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Mostrar mensaje de ejemplo al hacer clic en "Imprimir Boleta"
-                JOptionPane.showMessageDialog(null, "Boleta impresa con éxito.");
             }
         });
 
