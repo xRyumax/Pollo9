@@ -32,13 +32,13 @@ public class Interfaz2 extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10); // Espaciado entre componentes
 
         // Crear un panel con imagen de fondo
-        BackgroundPanel backgroundPanel = new BackgroundPanel("src/img/FUEGO.jpg"); // Ruta de la imagen de fondo
+        BackgroundPanel backgroundPanel = new BackgroundPanel("PruebaVista/src/img/FUEGO.jpg"); // Ruta de la imagen de fondo
         backgroundPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbcBackground = new GridBagConstraints();
         gbcBackground.insets = new Insets(10, 10, 10, 10); // Espaciado entre componentes
 
         // Imagen de la comida
-        imagenComida = new JLabel(new ImageIcon("src/img/gif.gif")); // Asegúrate de que la ruta sea correcta
+        imagenComida = new JLabel(new ImageIcon("PruebaVista/src/img/gif.gif")); // Asegúrate de que la ruta sea correcta
         gbcBackground.gridx = 0;
         gbcBackground.gridy = 0;
         gbcBackground.gridwidth = 2; // Ocupa dos columnas
