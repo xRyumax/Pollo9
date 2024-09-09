@@ -217,7 +217,6 @@ public class InfoPanel2J extends JPanel {
     bebidasPorTipo.put("Alcohol", new String[]{"Cusqueña", "Arequipeña", "Pilsen"});
     bebidasPorTipo.put("Refrescos", new String[]{"Chicha morada", "Limonada", "Maracuya"});
     bebidasPorTipo.put("Infusiones", new String[]{"Manzanilla", "Te", "Anis"});
-
     String tipoSeleccionado = (String) tipoComboBox.getSelectedItem();
 
     if (bebidasPorTipo.containsKey(tipoSeleccionado)) {
@@ -225,12 +224,13 @@ public class InfoPanel2J extends JPanel {
             bebidaComboBox.addItem(bebida);
         }
     }
-
+    
     // Establecer el estado de las bebidas después de seleccionar el tipo
     estadoComboBox.removeAllItems();
     estadoComboBox.addItem("-Seleccionar-");
     estadoComboBox.addItem("Helada");
     estadoComboBox.addItem("Al tiempo");
+    estadoComboBox.addItem("Caliente");
 }
 
     private void updateImage() {
