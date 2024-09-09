@@ -155,7 +155,20 @@ public class InfoPanel2J extends JPanel {
         // Agregar paneles al panel de información
         this.add(controlsPanel, BorderLayout.CENTER);
         this.add(buttonPanel, BorderLayout.SOUTH);
+        nextButton.addActionListener(e -> {
+        String tipo = (String) tipoComboBox.getSelectedItem();
+        String bebida = (String) bebidaComboBox.getSelectedItem();
+        int cantidad = (Integer) cantidadSpinner.getValue();
+        String estado = (String) estadoComboBox.getSelectedItem();
 
+        // Verifica que los valores no sean nulos y sean válidos
+        if (tipo != null && bebida != null && estado != null && !tipo.equals("-Seleccionar-") && !bebida.equals("-Seleccionar-") && !estado.equals("-Seleccionar-")) {
+            double temperatura = Double.parseDouble(temperaturaLabel.getText().split(" ")[1]);
+            BoletaPrinter.imprimirBoleta(tipo, bebida, cantidad, estado, temperatura);
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos antes de imprimir la boleta.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
         // Agregar listener para los combo boxes
         tipoComboBox.addActionListener(e -> tipoComboBoxActionPerformed());
         estadoComboBox.addActionListener(e -> {
