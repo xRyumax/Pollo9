@@ -17,18 +17,15 @@ import java.io.FileOutputStream;
 
 public class Interfaz2 extends JFrame {
 
-    
     private JLabel imagenComida;
     private JComboBox<String> porcion1, porcion2, contextura, sabor;
     private JTextField tiempoEstimado, precio;
     private JButton verIngredientes, modificarIngredientes, bebidas, preparar, añadir, emitirBoleta;
     private PerceptronIngredientes perceptron;        
-    
+
     public Interfaz2() {
         super("Interfaz de Comida");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600); // Aumenta el tamaño de la ventana
-        setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         perceptron = new PerceptronIngredientes();
@@ -247,6 +244,10 @@ public class Interfaz2 extends JFrame {
 
         // Ajuste automático del tamaño de la ventana
         pack();
+
+        // Centrar la ventana en la pantalla
+        setLocationRelativeTo(null);
+
         setVisible(true);
     }
 
@@ -294,31 +295,31 @@ public class Interfaz2 extends JFrame {
     }
 
     private void emitirBoleta() {
-    Document document = new Document();
-    try {
-        // Crea un archivo PDF en la ruta especificada
-        PdfWriter.getInstance(document, new FileOutputStream("boleta_plato.pdf"));
-        document.open();
-        // Añade contenido al PDF
-        document.add(new Paragraph("Boleta de Preparación de Plato"));
-        document.add(new Paragraph("-----------------------------"));
-        document.add(new Paragraph("Porción: " + porcion1.getSelectedItem().toString())); // Ajusta el componente según sea necesario
-        document.add(new Paragraph("Cantidad: " + porcion2.getSelectedItem().toString())); // Ajusta el componente según sea necesario
-        document.add(new Paragraph("Contextura: " + contextura.getSelectedItem().toString())); // Ajusta el componente según sea necesario
-        document.add(new Paragraph("Sabor: " + sabor.getSelectedItem().toString())); // Ajusta el componente según sea necesario
-        document.add(new Paragraph("Tiempo estimado: " + tiempoEstimado.getText()));
-        document.add(new Paragraph("Precio: " + precio.getText()));
-        document.add(new Paragraph("-----------------------------"));
-        document.add(new Paragraph("Gracias por su preferencia."));
-        document.close();
-        // Mensaje de éxito
-        JOptionPane.showMessageDialog(this, "Boleta generada exitosamente en boleta_plato.pdf", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-    } catch (DocumentException | FileNotFoundException e) {
-        e.printStackTrace();
-        // Mensaje de error
-        JOptionPane.showMessageDialog(this, "Error al generar la boleta", "Error", JOptionPane.ERROR_MESSAGE);
+        Document document = new Document();
+        try {
+            // Crea un archivo PDF en la ruta especificada
+            PdfWriter.getInstance(document, new FileOutputStream("boleta_plato.pdf"));
+            document.open();
+            // Añade contenido al PDF
+            document.add(new Paragraph("Boleta de Preparación de Plato"));
+            document.add(new Paragraph("-----------------------------"));
+            document.add(new Paragraph("Porción: " + porcion1.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+            document.add(new Paragraph("Cantidad: " + porcion2.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+            document.add(new Paragraph("Contextura: " + contextura.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+            document.add(new Paragraph("Sabor: " + sabor.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+            document.add(new Paragraph("Tiempo estimado: " + tiempoEstimado.getText()));
+            document.add(new Paragraph("Precio: " + precio.getText()));
+            document.add(new Paragraph("-----------------------------"));
+            document.add(new Paragraph("Gracias por su preferencia."));
+            document.close();
+            // Mensaje de éxito
+            JOptionPane.showMessageDialog(this, "Boleta generada exitosamente en boleta_plato.pdf", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (DocumentException | FileNotFoundException e) {
+            e.printStackTrace();
+            // Mensaje de error
+            JOptionPane.showMessageDialog(this, "Error al generar la boleta", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-}
 
     // Clase para un panel con imagen de fondo
     private static class BackgroundPanel extends JPanel {
