@@ -142,33 +142,26 @@ public class InfoPanel2J extends JPanel {
         añadirButton.setBackground(new Color(0, 0, 0));
         añadirButton.setForeground(Color.WHITE);
 
-        JButton nextButton = new JButton("Imprimir Boleta");
-        nextButton.setFont(new Font("Arial", Font.BOLD, 14));
-        nextButton.setBackground(new Color(0, 0, 0));
-        nextButton.setForeground(Color.WHITE);
+        // Agregar listener al botón "Añadir"
+        añadirButton.addActionListener(e -> añadirItem());
+
+        JButton imprimirButton = new JButton("Imprimir Boleta");
+        imprimirButton.setFont(new Font("Arial", Font.BOLD, 14));
+        imprimirButton.setBackground(new Color(0, 0, 0));
+        imprimirButton.setForeground(Color.WHITE);
+
+        // Agregar listener al botón "Imprimir Boleta"
+        imprimirButton.addActionListener(e -> imprimirBoleta());
 
         // Agregar botones al panel de botones
         buttonPanel.add(sugerirButton);
         buttonPanel.add(añadirButton);
-        buttonPanel.add(nextButton);
+        buttonPanel.add(imprimirButton);
 
         // Agregar paneles al panel de información
         this.add(controlsPanel, BorderLayout.CENTER);
         this.add(buttonPanel, BorderLayout.SOUTH);
-        nextButton.addActionListener(e -> {
-        String tipo = (String) tipoComboBox.getSelectedItem();
-        String bebida = (String) bebidaComboBox.getSelectedItem();
-        int cantidad = (Integer) cantidadSpinner.getValue();
-        String estado = (String) estadoComboBox.getSelectedItem();
 
-        // Verifica que los valores no sean nulos y sean válidos
-        if (tipo != null && bebida != null && estado != null && !tipo.equals("-Seleccionar-") && !bebida.equals("-Seleccionar-") && !estado.equals("-Seleccionar-")) {
-            double temperatura = Double.parseDouble(temperaturaLabel.getText().split(" ")[1]);
-            BoletaPrinter.imprimirBoleta(tipo, bebida, cantidad, estado, temperatura);
-        } else {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos antes de imprimir la boleta.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    });
         // Agregar listener para los combo boxes
         tipoComboBox.addActionListener(e -> tipoComboBoxActionPerformed());
         estadoComboBox.addActionListener(e -> {
@@ -192,7 +185,7 @@ public class InfoPanel2J extends JPanel {
             while (true) {
                 try {
                     // Actualizar la temperatura cada minuto
-                   Api servicioClima = new Api();
+                    Api servicioClima = new Api();
                     double temperatura = servicioClima.obtenerTemperatura();
                     SwingUtilities.invokeLater(() -> temperaturaLabel.setText("Temperatura: " + temperatura + " °C"));
 
@@ -222,29 +215,29 @@ public class InfoPanel2J extends JPanel {
     }
 
     private void updateBebidaComboBox() {
-    bebidaComboBox.removeAllItems(); // Limpiar ítems previos
+        bebidaComboBox.removeAllItems(); // Limpiar ítems previos
 
-    // Mapa con tipos de bebida y sus opciones
-    Map<String, String[]> bebidasPorTipo = new HashMap<>();
-    bebidasPorTipo.put("Gaseosa", new String[]{"Coca Cola", "Inka Kola", "Fanta"});
-    bebidasPorTipo.put("Alcohol", new String[]{"Cusqueña", "Arequipeña", "Pilsen"});
-    bebidasPorTipo.put("Refrescos", new String[]{"Chicha morada", "Limonada", "Maracuya"});
-    bebidasPorTipo.put("Infusiones", new String[]{"Manzanilla", "Te", "Anis"});
-    String tipoSeleccionado = (String) tipoComboBox.getSelectedItem();
+        // Mapa con tipos de bebida y sus opciones
+        Map<String, String[]> bebidasPorTipo = new HashMap<>();
+        bebidasPorTipo.put("Gaseosa", new String[]{"Coca Cola", "Inka Kola", "Fanta"});
+        bebidasPorTipo.put("Alcohol", new String[]{"Cusqueña", "Arequipeña", "Pilsen"});
+        bebidasPorTipo.put("Refrescos", new String[]{"Chicha morada", "Limonada", "Maracuya"});
+        bebidasPorTipo.put("Infusiones", new String[]{"Manzanilla", "Te", "Anis"});
+        String tipoSeleccionado = (String) tipoComboBox.getSelectedItem();
 
-    if (bebidasPorTipo.containsKey(tipoSeleccionado)) {
-        for (String bebida : bebidasPorTipo.get(tipoSeleccionado)) {
-            bebidaComboBox.addItem(bebida);
+        if (bebidasPorTipo.containsKey(tipoSeleccionado)) {
+            for (String bebida : bebidasPorTipo.get(tipoSeleccionado)) {
+                bebidaComboBox.addItem(bebida);
+            }
         }
+        
+        // Establecer el estado de las bebidas después de seleccionar el tipo
+        estadoComboBox.removeAllItems();
+        estadoComboBox.addItem("-Seleccionar-");
+        estadoComboBox.addItem("Helada");
+        estadoComboBox.addItem("Al tiempo");
+        estadoComboBox.addItem("Caliente");
     }
-    
-    // Establecer el estado de las bebidas después de seleccionar el tipo
-    estadoComboBox.removeAllItems();
-    estadoComboBox.addItem("-Seleccionar-");
-    estadoComboBox.addItem("Helada");
-    estadoComboBox.addItem("Al tiempo");
-    estadoComboBox.addItem("Caliente");
-}
 
     private void updateImage() {
         String tipoSeleccionado = (String) tipoComboBox.getSelectedItem();
@@ -255,40 +248,57 @@ public class InfoPanel2J extends JPanel {
         infoPanel1.updateImageBasedOnSelection(tipoSeleccionado, bebidaSeleccionada, estadoSeleccionado);
     }
 
-   private void sugerirBebida() {
-    try {
-        Api servicioClima = new Api();
-        double temperatura = servicioClima.obtenerTemperatura();
+    private void sugerirBebida() {
+        try {
+            Api servicioClima = new Api();
+            double temperatura = servicioClima.obtenerTemperatura();
 
-        // Obtener sugerencias del perceptrón
-        String tipoBebida = perceptron.sugerirTipo(temperatura);
-        String estadoBebida = perceptron.predecirEstado(temperatura); // Usar la función mejorada para predecir el estado
+            // Obtener sugerencias del perceptrón
+            String tipoBebida = perceptron.sugerirTipo(temperatura);
+            String estadoBebida = perceptron.predecirEstado(temperatura); // Usar la función mejorada para predecir el estado
 
-        // Actualiza los JComboBox según las sugerencias del perceptrón
-        tipoComboBox.setSelectedItem(tipoBebida);
+            // Actualiza los JComboBox según las sugerencias del perceptrón
+            tipoComboBox.setSelectedItem(tipoBebida);
 
-        // Selecciona una bebida al azar dentro del tipo sugerido
-        int itemCount = bebidaComboBox.getItemCount();
-        if (itemCount > 0) {
-            Random random = new Random();
-            int randomIndex = random.nextInt(itemCount);  // Índice aleatorio basado en el número de ítems en el combo box
-            bebidaComboBox.setSelectedIndex(randomIndex); // Seleccionar una bebida al azar
+            // Selecciona una bebida al azar dentro del tipo sugerido
+            int itemCount = bebidaComboBox.getItemCount();
+            if (itemCount > 0) {
+                Random random = new Random();
+                int randomIndex = random.nextInt(itemCount);  // Índice aleatorio basado en el número de ítems en el combo box
+                bebidaComboBox.setSelectedIndex(randomIndex); // Seleccionar una bebida al azar
+            }
+
+            // Selecciona el estado basado en la predicción mejorada del perceptrón
+            estadoComboBox.setSelectedItem(estadoBebida);
+
+            // Mostrar la sugerencia al usuario
+            JOptionPane.showMessageDialog(this, 
+                "Sugerencia de bebida para " + temperatura + " °C: " + tipoBebida + " - " + estadoBebida, 
+                "Sugerencia", 
+                JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al obtener la temperatura.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
 
-        // Selecciona el estado basado en la predicción mejorada del perceptrón
-        estadoComboBox.setSelectedItem(estadoBebida);
+    private void añadirItem() {
+        String tipo = (String) tipoComboBox.getSelectedItem();
+        String bebida = (String) bebidaComboBox.getSelectedItem();
+        Integer cantidad = (Integer) cantidadSpinner.getValue();
+        String estado = (String) estadoComboBox.getSelectedItem();
+        double temperatura = Double.parseDouble(temperaturaLabel.getText().replace("Temperatura: ", "").replace(" °C", ""));
+        
+        // Añadir la información a la boleta
+        BoletaPrinter.añadirItem(tipo, bebida, cantidad, estado, temperatura);
+        
+        // Confirmar que el ítem ha sido añadido
+        JOptionPane.showMessageDialog(this, "Ítem añadido a la boleta.");
+    }
 
-        // Mostrar la sugerencia al usuario
-        JOptionPane.showMessageDialog(this, 
-            "Sugerencia de bebida para " + temperatura + " °C: " + tipoBebida + " - " + estadoBebida, 
-            "Sugerencia", 
-            JOptionPane.INFORMATION_MESSAGE);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al obtener la temperatura.", "Error", JOptionPane.ERROR_MESSAGE);
+    private void imprimirBoleta() {
+        // Imprimir la boleta
+        BoletaPrinter.imprimirBoleta();
     }
 }
-}
-
-
