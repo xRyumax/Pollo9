@@ -277,3 +277,5 @@ public class InfoPanel2J extends JPanel {
     }
 }
 }
+
+

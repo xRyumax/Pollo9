@@ -7,17 +7,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import javax.swing.JOptionPane;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 public class Interfaz2 extends JFrame {
 
-    
     
     private JLabel imagenComida;
     private JComboBox<String> porcion1, porcion2, contextura, sabor;
     private JTextField tiempoEstimado, precio;
     private JButton verIngredientes, modificarIngredientes, bebidas, preparar, añadir, emitirBoleta;
-    
-    
+    private PerceptronIngredientes perceptron;        
     
     public Interfaz2() {
         super("Interfaz de Comida");
@@ -26,27 +31,33 @@ public class Interfaz2 extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        perceptron = new PerceptronIngredientes();
         gbc.insets = new Insets(10, 10, 10, 10); // Espaciado entre componentes
+
         // Crear un panel con imagen de fondo
-        BackgroundPanel backgroundPanel = new BackgroundPanel("PruebaVista/src/img/FUEGO.jpg"); // Ruta de la imagen de fondo
+        BackgroundPanel backgroundPanel = new BackgroundPanel("src/img/FUEGO.jpg"); // Ruta de la imagen de fondo
         backgroundPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbcBackground = new GridBagConstraints();
         gbcBackground.insets = new Insets(10, 10, 10, 10); // Espaciado entre componentes
+
         // Imagen de la comida
-        imagenComida = new JLabel(new ImageIcon("PruebaVista/src/img/gif.gif")); // Asegúrate de que la ruta sea correcta
+        imagenComida = new JLabel(new ImageIcon("src/img/gif.gif")); // Asegúrate de que la ruta sea correcta
         gbcBackground.gridx = 0;
         gbcBackground.gridy = 0;
         gbcBackground.gridwidth = 2; // Ocupa dos columnas
         gbcBackground.fill = GridBagConstraints.HORIZONTAL;
         backgroundPanel.add(imagenComida, gbcBackground);
+
         // Panel para la columna izquierda
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new GridLayout(6, 1, 10, 10));
         leftPanel.setBackground(Color.BLACK); // Fondo negro para el panel izquierdo
+
         // Estilo de los componentes internos
         Color textColor = Color.BLACK;
         Color comboBoxBackground = Color.ORANGE;
         Color textFieldBackground = Color.GRAY;
+
         // Porción 1
         JPanel porcion1Panel = new JPanel(new BorderLayout());
         JLabel labelPorcion1 = new JLabel("Porción");
@@ -57,6 +68,7 @@ public class Interfaz2 extends JFrame {
         porcion1.setForeground(textColor);
         porcion1Panel.add(porcion1, BorderLayout.CENTER);
         leftPanel.add(porcion1Panel);
+
         // Cantidad
         JPanel porcion2Panel = new JPanel(new BorderLayout());
         JLabel labelPorcion2 = new JLabel("Cantidad");
@@ -67,6 +79,7 @@ public class Interfaz2 extends JFrame {
         porcion2.setForeground(textColor);
         porcion2Panel.add(porcion2, BorderLayout.CENTER);
         leftPanel.add(porcion2Panel);
+
         // Contextura
         JPanel contexturaPanel = new JPanel(new BorderLayout());
         JLabel labelContextura = new JLabel("Contextura");
@@ -77,6 +90,7 @@ public class Interfaz2 extends JFrame {
         contextura.setForeground(textColor);
         contexturaPanel.add(contextura, BorderLayout.CENTER);
         leftPanel.add(contexturaPanel);
+
         // Sabor
         JPanel saborPanel = new JPanel(new BorderLayout());
         JLabel labelSabor = new JLabel("Sabor");
@@ -137,6 +151,24 @@ public class Interfaz2 extends JFrame {
         gbcRight.gridy = 1;
         gbcRight.gridwidth = 1; // Ocupa una columna
         rightPanel.add(verIngredientes, gbcRight);
+        
+        verIngredientes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtiene la selección de contextura y sabor
+                String seleccionContextura = (String) contextura.getSelectedItem();
+                String seleccionSabor = (String) sabor.getSelectedItem();
+                
+                // Calcula los ingredientes usando el perceptrón
+                String[] ingredientes = perceptron.calcularIngredientes(seleccionContextura, seleccionSabor);
+                
+                // Muestra los ingredientes en un diálogo
+                JOptionPane.showMessageDialog(null, 
+                    "Ingredientes: " + String.join(", ", ingredientes), 
+                    "Ingredientes del Pollo", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         // Botón "Modificar ingredientes" con estilo
         modificarIngredientes = createStyledButton("Modificar ingredientes", Color.WHITE, Color.GREEN);
@@ -262,8 +294,31 @@ public class Interfaz2 extends JFrame {
     }
 
     private void emitirBoleta() {
-        // Implementa la lógica para emitir boleta aquí
+    Document document = new Document();
+    try {
+        // Crea un archivo PDF en la ruta especificada
+        PdfWriter.getInstance(document, new FileOutputStream("boleta_plato.pdf"));
+        document.open();
+        // Añade contenido al PDF
+        document.add(new Paragraph("Boleta de Preparación de Plato"));
+        document.add(new Paragraph("-----------------------------"));
+        document.add(new Paragraph("Porción: " + porcion1.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+        document.add(new Paragraph("Cantidad: " + porcion2.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+        document.add(new Paragraph("Contextura: " + contextura.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+        document.add(new Paragraph("Sabor: " + sabor.getSelectedItem().toString())); // Ajusta el componente según sea necesario
+        document.add(new Paragraph("Tiempo estimado: " + tiempoEstimado.getText()));
+        document.add(new Paragraph("Precio: " + precio.getText()));
+        document.add(new Paragraph("-----------------------------"));
+        document.add(new Paragraph("Gracias por su preferencia."));
+        document.close();
+        // Mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Boleta generada exitosamente en boleta_plato.pdf", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    } catch (DocumentException | FileNotFoundException e) {
+        e.printStackTrace();
+        // Mensaje de error
+        JOptionPane.showMessageDialog(this, "Error al generar la boleta", "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     // Clase para un panel con imagen de fondo
     private static class BackgroundPanel extends JPanel {
@@ -290,4 +345,3 @@ public class Interfaz2 extends JFrame {
         SwingUtilities.invokeLater(() -> new Interfaz2());
     }
 }
-

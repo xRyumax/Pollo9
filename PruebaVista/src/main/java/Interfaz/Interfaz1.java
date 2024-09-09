@@ -1,5 +1,8 @@
 package Interfaz;
 
+import RedNeuronal.ClasificadorIngredientes;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -24,7 +27,7 @@ public class Interfaz1 extends JFrame {
         "Vinagre.png", "Aceite.jpg", "Limón.png", "Salsa de soya.jpeg",
         "Ajo.jpeg", "Cebolla.jpg", "Pimienta roja.jpg", "Curry.jpg",
         "Tomate.jpeg", "Chimichurri.jpg", "Pimienta negra.jpg", "Romero.jpeg",
-        "tomillo.jpg", "Laurel.jpg", "Pasta de ají.jpg", "Cebollín.jpeg"
+        "Tomillo.jpg", "Laurel.jpg", "Pasta de ají.jpg", "Cebollín.jpeg"
     };
 
     public Interfaz1() {
@@ -108,7 +111,32 @@ public class Interfaz1 extends JFrame {
             }
         });
 
+        // Acción del botón "Añadir"
+        buttonAñadir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isPolloSeleccionado()) {
+                    mostrarResumenSeleccion();
+                } else {
+                    // Muestra un mensaje de advertencia si "Pollo" no está seleccionado
+                    JOptionPane.showMessageDialog(Interfaz1.this,
+                            "¿Pollo a la brasa sin pollo? Bravo genio",
+                            "¡Aguanta!", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
         setVisible(true);
+    }
+
+    private boolean isPolloSeleccionado() {
+        // Verifica si el JCheckBox con el texto "Pollo" está seleccionado
+        for (JCheckBox checkBox : checkBoxes) {
+            if (checkBox.getText().equals("Pollo") && checkBox.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void actualizarImagenes() {
@@ -146,7 +174,6 @@ public class Interfaz1 extends JFrame {
         // Calcula el nuevo tamaño manteniendo la relación de aspecto
         double aspectRatio = (double) img.getWidth() / img.getHeight();
         int newWidth, newHeight;
-
         if (img.getWidth() > img.getHeight()) {
             newWidth = width;
             newHeight = (int) (width / aspectRatio);
@@ -154,29 +181,53 @@ public class Interfaz1 extends JFrame {
             newHeight = height;
             newWidth = (int) (height * aspectRatio);
         }
-
-        // Redimensiona la imagen
         Image scaledImage = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-
-        // Crea un BufferedImage con el nuevo tamaño
-        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(scaledImage, 0, 0, null);
-        g2d.dispose();
-
-        return resizedImage;
+        return scaledImage;
     }
 
-    private void estilizarBoton(JButton button) {
-        button.setBackground(new Color(198, 40, 40)); // Color rojo fuego
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setFont(new Font("Tahoma", Font.BOLD, 14));
-        button.setBorder(new LineBorder(new Color(139, 0, 0), 2, true)); // Bordes redondeados y oscuros
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Cambia el cursor a "mano"
+    private void mostrarResumenSeleccion() {
+        // Recopila los ingredientes seleccionados
+        StringBuilder resumen = new StringBuilder();
+        double[] entradas = new double[checkBoxes.length]; // Ejemplo de entradas para la red neuronal
+        for (int i = 0; i < checkBoxes.length; i++) {
+            if (checkBoxes[i].isSelected()) {
+                resumen.append(checkBoxes[i].getText()).append("\n");
+                entradas[i] = 1.0; // Marca el ingrediente como seleccionado
+            } else {
+                entradas[i] = 0.0; // Marca el ingrediente como no seleccionado
+            }
+        }
+
+        // Usa la red neuronal para obtener un resumen basado en los ingredientes seleccionados
+        ClasificadorIngredientes clasificador = new ClasificadorIngredientes();
+        String resultadoClasificacion = clasificador.clasificar(entradas);
+
+        // Aplica el estilo FlatDarkLaf a la ventana emergente
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf()); // Cambia al estilo FlatDarkLaf
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+
+        // Muestra el resumen en un JOptionPane con estilo FlatDarkLaf
+        JOptionPane.showMessageDialog(this, 
+            "Ingredientes seleccionados:\n" + resumen.toString() + "\nResultado de la clasificación:\n" + resultadoClasificacion,
+            "Resumen", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void estilizarBoton(JButton boton) {
+        boton.setBackground(new Color(128, 64, 0)); // Color marrón
+        boton.setForeground(Color.WHITE); // Texto blanco
+        boton.setFont(new Font("Arial", Font.BOLD, 14));
+        boton.setBorder(new LineBorder(new Color(102, 51, 0), 2)); // Borde marrón oscuro
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Interfaz1());
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf()); // Cambia el Look and Feel a FlatDarkLaf
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        new Interfaz1();
     }
 }
