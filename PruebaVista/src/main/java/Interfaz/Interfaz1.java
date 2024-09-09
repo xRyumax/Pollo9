@@ -222,12 +222,4 @@ public class Interfaz1 extends JFrame {
         boton.setBorder(new LineBorder(new Color(102, 51, 0), 2)); // Borde marrón oscuro
     }
 
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(new FlatDarkLaf()); // Cambia el Look and Feel a FlatDarkLaf
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
-        new Interfaz1();
-    }
 }
