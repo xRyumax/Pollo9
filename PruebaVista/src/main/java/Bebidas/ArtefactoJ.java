@@ -27,7 +27,7 @@ public class ArtefactoJ extends JFrame {
         this.setSize(1200, 800);
         this.setResizable(true);
         this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null); // Centrar la ventana en la pantalla
 
         
